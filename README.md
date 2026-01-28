@@ -6,9 +6,9 @@
 
 ![](images/image38.png)
 
-Revised by Gemini, origin: [https://www.scaler.com/topics/kafka-tutorial/kafka-partitioning-strategy/](https://www.google.com/url?q=https://www.scaler.com/topics/kafka-tutorial/kafka-partitioning-strategy/&sa=D&source=editors&ust=1769602678596008&usg=AOvVaw08oCwKcjDbYSt43drNh_lH)
+Revised by Gemini, origin: <https://www.scaler.com/topics/kafka-tutorial/kafka-partitioning-strategy/>
 
-以下Kafka元素解釋取自[Kafka超新手入門第一瞥](https://www.google.com/url?q=https://chrisyen8341.medium.com/kafka%25E8%25B6%2585%25E6%2596%25B0%25E6%2589%258B%25E5%2585%25A5%25E9%2596%2580%25E7%25AC%25AC%25E4%25B8%2580%25E7%259E%25A5-9348a9cb23dc&sa=D&source=editors&ust=1769602678596248&usg=AOvVaw3IlF59OIB8H9iC72o90V7G)，並進行微幅的文字修改。
+以下Kafka元素解釋取自[Kafka超新手入門第一瞥](https://chrisyen8341.medium.com/kafka%E8%B6%85%E6%96%B0%E6%89%8B%E5%85%A5%E9%96%80%E7%AC%AC%E4%B8%80%E7%9E%A5-9348a9cb23dc)，並進行微幅的文字修改。
 
 1. Event：事件或是 message ，或想成一筆資料流，比如說 “Alice Made a payment of $200 to Bob” 就是一筆 message 或是 event 。
 2. Broker：運行 Kafka 的 Server ，通常 Kafka 會由多台 Broker 組成，多台 Broker 會組成一個 Kafka Cluster 。此外，叢集中的每一台 Broker 也會隨機擔任特定 Consumer Group 的Group Coordinator ，負責管理該群組成員的健康狀態 (Heartbeat) 並協助觸發 Rebalance 流程。
@@ -167,34 +167,28 @@ sudo apt install docker-compose
 
 ![](images/image35.png)
 
-3.2 建立 Kafka 的 docker-compose.yml (依照此網站的[範本](https://www.google.com/url?q=https://medium.com/@darshak.kachchhi/setting-up-a-kafka-cluster-using-docker-compose-a-step-by-step-guide-a1ee5972b122&sa=D&source=editors&ust=1769602678605797&usg=AOvVaw0ix0gmhFVM0gxy2__v5vo_)去修改)
+3.2 建立 Kafka 的 docker-compose.yml (依照此網站的[範本](https://medium.com/@darshak.kachchhi/setting-up-a-kafka-cluster-using-docker-compose-a-step-by-step-guide-a1ee5972b122)去修改)
 
 
 ```
 
 version: 
 '3.8'
-networks:
-  kafka-net:
+networks: kafka-net:
     driver: 
 bridge
-services:
-  kafka1:
+services: kafka1:
     image: 
 confluentinc/cp-kafka:7.8.0
     hostname: 
 kafka1
     container_name: 
 kafka1
-    ports:
-      -
+    ports: -
  
 "9092:9092"
-      -
- 
-"9093:9093"
-    environment:
-      KAFKA_NODE_ID: 
+      -"9093:9093"
+    environment: KAFKA_NODE_ID: 
 1
       KAFKA_PROCESS_ROLES: 
 'broker,controller'
@@ -222,30 +216,23 @@ kafka1
 3
       KAFKA_MIN_INSYNC_REPLICAS: 
 2
-    volumes:
-      -
+    volumes: -
  
 ./kafka1/data:/var/lib/kafka/data
-    networks:
-      -
+    networks: -
  
 kafka-net
-  kafka2:
-    image: 
+  kafka2: image: 
 confluentinc/cp-kafka:7.8.0
     hostname: 
 kafka2
     container_name: 
 kafka2
-    ports:
-      -
+    ports: -
  
 "9094:9092"
-      -
- 
-"9095:9093"
-    environment:
-      KAFKA_NODE_ID: 
+      -"9095:9093"
+    environment: KAFKA_NODE_ID: 
 2
       KAFKA_PROCESS_ROLES: 
 'broker,controller'
@@ -271,30 +258,23 @@ kafka2
 3
       KAFKA_MIN_INSYNC_REPLICAS: 
 2
-    volumes:
-      -
+    volumes: -
  
 ./kafka2/data:/var/lib/kafka/data
-    networks:
-      -
+    networks: -
  
 kafka-net
-  kafka3:
-    image: 
+  kafka3: image: 
 confluentinc/cp-kafka:7.8.0
     hostname: 
 kafka3
     container_name: 
 kafka3
-    ports:
-      -
+    ports: -
  
 "9096:9092"
-      -
- 
-"9097:9093"
-    environment:
-      KAFKA_NODE_ID: 
+      -"9097:9093"
+    environment: KAFKA_NODE_ID: 
 3
       KAFKA_PROCESS_ROLES: 
 'broker,controller'
@@ -320,12 +300,10 @@ kafka3
 3
       KAFKA_MIN_INSYNC_REPLICAS: 
 2
-    volumes:
-      -
+    volumes: -
  
 ./kafka3/data:/var/lib/kafka/data
-    networks:
-      -
+    networks: -
  
 kafka-net
   kafka-ui:
@@ -333,26 +311,18 @@ kafka-net
 provectuslabs/kafka-ui:latest
     container_name: 
 kafka-cluster-ui
-    ports:
-      -
+    ports: -
  
 "8080:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: 
+    environment: KAFKA_CLUSTERS_0_NAME: 
 local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29092,kafka3:29092
-    depends_on:
-      -
+    depends_on: -
  
 kafka1
-      -
- 
-kafka2
-      -
- 
-kafka3
-    networks:
-      -
+      -kafka2
+      -kafka3
+    networks: -
  
 kafka-net
 
@@ -963,15 +933,12 @@ KafkaServer {
 
 ```
 
-volumes:
-      -
+volumes: -
  
 ./kafka1/data:/var/lib/kafka/data
   
 # (這是原本的)
-      -
- 
-./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      -./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
  
       # --- 新增上面這行 ---
 
@@ -983,9 +950,7 @@ volumes:
 
 ```
 
-environment:
-      
-# ... (其他 ID、Cluster ID 等設定保持不變) ...
+environment: # ... (其他 ID、Cluster ID 等設定保持不變) ...
       
 # [新增] 1. 告訴 Kafka 密碼檔在哪裡
       KAFKA_OPTS: 
@@ -1044,7 +1009,7 @@ changeit
 ```
 
 
-2.3 建立產生私鑰的腳本 [generate-ssl.sh](https://www.google.com/url?q=http://generate-ssl.sh&sa=D&source=editors&ust=1769602678637186&usg=AOvVaw3fbNog9RJ25DI5yDLQXQXP) 。
+2.3 建立產生私鑰的腳本 [generate-ssl.sh](http://generate-ssl.sh) 。
 
 
 ```
@@ -1188,7 +1153,7 @@ echo
 ```
 
 
-2.4 修改 sh 檔的權限：chmod +x [generate-ssl.sh](https://www.google.com/url?q=http://generate-ssl.sh&sa=D&source=editors&ust=1769602678640709&usg=AOvVaw1BlvRj3Hn3OjJr2u2-PTlx)，但第一時間會報錯，因為乾淨的 ubuntu 上面並沒有 Java ，所以改借用一個容器(Kafka，裡面一定有 Java )來執行腳本。容器用完就直接刪除。
+2.4 修改 sh 檔的權限：chmod +x [generate-ssl.sh](http://generate-ssl.sh)，但第一時間會報錯，因為乾淨的 ubuntu 上面並沒有 Java ，所以改借用一個容器(Kafka，裡面一定有 Java )來執行腳本。容器用完就直接刪除。
 
 
 ```
@@ -1227,27 +1192,21 @@ $USER
 
 version: 
 '3.8'
-networks:
-  kafka-net:
+networks: kafka-net:
     driver: 
 bridge
-services:
-  kafka1:
+services: kafka1:
     image: 
 confluentinc/cp-kafka:7.8.0
     hostname: 
 kafka1
     container_name: 
 kafka1
-    ports:
-      -
+    ports: -
  
 "9092:9092"
-      -
- 
-"9093:9093"
-    environment:
-      KAFKA_NODE_ID: 
+      -"9093:9093"
+    environment: KAFKA_NODE_ID: 
 1
       KAFKA_PROCESS_ROLES: 
 'broker,controller'
@@ -1318,38 +1277,27 @@ changeit
 3
       KAFKA_MIN_INSYNC_REPLICAS: 
 2
-    volumes:
-      -
+    volumes: -
  
 ./kafka1/data:/var/lib/kafka/data
-      -
- 
-./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
-      -
- 
-./secrets:/etc/kafka/secrets
+      -./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      -./secrets:/etc/kafka/secrets
   
 # 掛載憑證
-    networks:
-      -
+    networks: -
  
 kafka-net
-  kafka2:
-    image: 
+  kafka2: image: 
 confluentinc/cp-kafka:7.8.0
     hostname: 
 kafka2
     container_name: 
 kafka2
-    ports:
-      -
+    ports: -
  
 "9094:9092"
-      -
- 
-"9095:9093"
-    environment:
-      KAFKA_NODE_ID: 
+      -"9095:9093"
+    environment: KAFKA_NODE_ID: 
 2
       KAFKA_PROCESS_ROLES: 
 'broker,controller'
@@ -1402,36 +1350,25 @@ changeit
 3
       KAFKA_MIN_INSYNC_REPLICAS: 
 2
-    volumes:
-      -
+    volumes: -
  
 ./kafka2/data:/var/lib/kafka/data
-      -
- 
-./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
-      -
- 
-./secrets:/etc/kafka/secrets
-    networks:
-      -
+      -./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      -./secrets:/etc/kafka/secrets
+    networks: -
  
 kafka-net
-  kafka3:
-    image: 
+  kafka3: image: 
 confluentinc/cp-kafka:7.8.0
     hostname: 
 kafka3
     container_name: 
 kafka3
-    ports:
-      -
+    ports: -
  
 "9096:9092"
-      -
- 
-"9097:9093"
-    environment:
-      KAFKA_NODE_ID: 
+      -"9097:9093"
+    environment: KAFKA_NODE_ID: 
 3
       KAFKA_PROCESS_ROLES: 
 'broker,controller'
@@ -1484,18 +1421,12 @@ changeit
 3
       KAFKA_MIN_INSYNC_REPLICAS: 
 2
-    volumes:
-      -
+    volumes: -
  
 ./kafka3/data:/var/lib/kafka/data
-      -
- 
-./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
-      -
- 
-./secrets:/etc/kafka/secrets
-    networks:
-      -
+      -./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      -./secrets:/etc/kafka/secrets
+    networks: -
  
 kafka-net
   kafka-ui:
@@ -1503,18 +1434,15 @@ kafka-net
 provectuslabs/kafka-ui:latest
     container_name: 
 kafka-cluster-ui
-    ports:
-      -
+    ports: -
  
 "8080:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: 
+    environment: KAFKA_CLUSTERS_0_NAME: 
 local
       
 # 這裡走 INTERNAL port (29092)，維持 PLAINTEXT，所以 UI 不需要改 SSL 設定
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29092,kafka3:29092
-    networks:
-      -
+    networks: -
  
 kafka-net
 
@@ -1852,23 +1780,23 @@ for
 
 ### 環境建置與部署
 
-1. [Install Docker Engine on Ubuntu](https://www.google.com/url?q=https://docs.docker.com/engine/install/ubuntu/&sa=D&source=editors&ust=1769602678664571&usg=AOvVaw0tTOhUT644krekV16bEx9v)
-2. [安裝 Docker 與 Docker Compose (plugin) on Ubuntu 24.04](https://www.google.com/url?q=https://hackmd.io/1fJbhh0CTSq8CP04QlybHQ&sa=D&source=editors&ust=1769602678664764&usg=AOvVaw3ZJ0kI7yuwc3Yy1RK_N6Mn)
-3. Kafka ymal 檔參考：[Setting Up a Kafka Cluster Using Docker Compose(Kraft Mode): A Step-by-Step Guide](https://www.google.com/url?q=https://medium.com/@darshak.kachchhi/setting-up-a-kafka-cluster-using-docker-compose-a-step-by-step-guide-a1ee5972b122&sa=D&source=editors&ust=1769602678665028&usg=AOvVaw3adlMJzqIdAesHnMnFg8l-)
+1. [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+2. [安裝 Docker 與 Docker Compose (plugin) on Ubuntu 24.04](https://hackmd.io/1fJbhh0CTSq8CP04QlybHQ)
+3. Kafka ymal 檔參考：[Setting Up a Kafka Cluster Using Docker Compose(Kraft Mode): A Step-by-Step Guide](https://medium.com/@darshak.kachchhi/setting-up-a-kafka-cluster-using-docker-compose-a-step-by-step-guide-a1ee5972b122)
 
 ### Kafka 基礎知識
 
-1. [Apache Kafka 是什麼？核心元件、優勢、常見使用案例一次看！](https://www.google.com/url?q=https://www.omniwaresoft.com.tw/product-news/kafka-introduction/&sa=D&source=editors&ust=1769602678665297&usg=AOvVaw1ZiyVTVpWQESsXIo1s2aO6)
-2. [Danica Fine – Brick-by-Brick: Exploring the Elements of Apache Kafka®](https://www.google.com/url?q=https://www.youtube.com/watch?v%3D690q2H0vQzQ&sa=D&source=editors&ust=1769602678665496&usg=AOvVaw1qnjinae2rdSJkoVd2XLyo)
-3. [Apache Kafka Architecture](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DIsgRatCefVc&sa=D&source=editors&ust=1769602678665631&usg=AOvVaw2nRLHDh7xizJcqR-vOGlFS)
-4. [Understanding Kafka Partitioning Strategy](https://www.google.com/url?q=https://www.scaler.com/topics/kafka-tutorial/kafka-partitioning-strategy/&sa=D&source=editors&ust=1769602678665813&usg=AOvVaw1eID-HCO7ObGt1kz5b_hh0)
-5. [Kafka超新手入門第一瞥](https://www.google.com/url?q=https://chrisyen8341.medium.com/kafka%25E8%25B6%2585%25E6%2596%25B0%25E6%2589%258B%25E5%2585%25A5%25E9%2596%2580%25E7%25AC%25AC%25E4%25B8%2580%25E7%259E%25A5-9348a9cb23dc&sa=D&source=editors&ust=1769602678665958&usg=AOvVaw2TDZ-XgH8kVbL_vi3qBEWi)
+1. [Apache Kafka 是什麼？核心元件、優勢、常見使用案例一次看！](https://www.omniwaresoft.com.tw/product-news/kafka-introduction/)
+2. [Danica Fine – Brick-by-Brick: Exploring the Elements of Apache Kafka®](https://www.youtube.com/watch?v=690q2H0vQzQ)
+3. [Apache Kafka Architecture](https://www.youtube.com/watch?v=IsgRatCefVc)
+4. [Understanding Kafka Partitioning Strategy](https://www.scaler.com/topics/kafka-tutorial/kafka-partitioning-strategy/)
+5. [Kafka超新手入門第一瞥](https://chrisyen8341.medium.com/kafka%E8%B6%85%E6%96%B0%E6%89%8B%E5%85%A5%E9%96%80%E7%AC%AC%E4%B8%80%E7%9E%A5-9348a9cb23dc)
 
 ### Kafka HA 應用場景
 
-1. [不只快，更要穩！揭開 Kafka 支撐百萬事件流的祕密](https://www.google.com/url?q=https://medium.com/@systexdatalab/%25E4%25B8%258D%25E5%258F%25AA%25E5%25BF%25AB-%25E6%259B%25B4%25E8%25A6%2581%25E7%25A9%25A9-%25E6%258F%25AD%25E9%2596%258B-kafka-%25E6%2594%25AF%25E6%2592%2590%25E7%2599%25BE%25E8%2590%25AC%25E4%25BA%258B%25E4%25BB%25B6%25E6%25B5%2581%25E7%259A%2584%25E7%25A5%2595%25E5%25AF%2586-8bd32bf4132f&sa=D&source=editors&ust=1769602678666290&usg=AOvVaw0_X4v1BYNMF_ucxjgb0eo3)
-2. [Top Kafka Use Cases You Should Know](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DAjz6dBp_EB4&sa=D&source=editors&ust=1769602678666438&usg=AOvVaw1_Sci4vAvpf90liLQZnE7h)
+1. [不只快，更要穩！揭開 Kafka 支撐百萬事件流的祕密](https://medium.com/@systexdatalab/%E4%B8%8D%E5%8F%AA%E5%BF%AB-%E6%9B%B4%E8%A6%81%E7%A9%A9-%E6%8F%AD%E9%96%8B-kafka-%E6%94%AF%E6%92%90%E7%99%BE%E8%90%AC%E4%BA%8B%E4%BB%B6%E6%B5%81%E7%9A%84%E7%A5%95%E5%AF%86-8bd32bf4132f)
+2. [Top Kafka Use Cases You Should Know](https://www.youtube.com/watch?v=Ajz6dBp_EB4)
 
 ### Kafka HA 與 DR
 
-1. [Apache Kafka disaster recovery & high availability](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DLghZ7ccAdAE&sa=D&source=editors&ust=1769602678666706&usg=AOvVaw33B7jyaIoIQC_clgPK7R0h)
+1. [Apache Kafka disaster recovery & high availability](https://www.youtube.com/watch?v=LghZ7ccAdAE)
