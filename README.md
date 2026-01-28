@@ -638,7 +638,3 @@ Commit 後的畫面如下，它會展示所有欲上傳的檔案
 ### Kafka HA 與 DR
 
 1. [Apache Kafka disaster recovery & high availability](https://www.google.com/url?q=https://www.youtube.com/watch?v%3DLghZ7ccAdAE&sa=D&source=editors&ust=1769602678666706&usg=AOvVaw33B7jyaIoIQC_clgPK7R0h)
-
-repo token
-
-ghp\_4oxYUtnOTJ7iVT78j7XwINjNimlWMz00AfWo
