@@ -1,0 +1,18 @@
+# === 忽略敏感資料 (正本) ===
+secrets/
+*.jks
+kafka_server_jaas.conf
+client-ssl.properties
+client-alice.properties
+
+# 完全隱藏，忽略正本：
+docker-compose.yml
+
+# === 忽略資料存儲 (太大了不要傳) ===
+kafka1/data/
+kafka2/data/
+kafka3/data/
+
+# === 忽略執行檔或暫存檔 ===
+*.log
+.DS_Store
