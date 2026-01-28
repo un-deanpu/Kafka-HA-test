@@ -99,9 +99,7 @@ Kafka 依賴 ZooKeeper (舊版) 或 KRaft (新版) 來維護叢集狀態。
 
 
 ```
-
 sudo chmod -R 777 kafka1 kafka2 kafka3
-
 ```
 
 
@@ -111,29 +109,23 @@ sudo chmod -R 777 kafka1 kafka2 kafka3
 
 
 ```
-
 # Add Docker's official GPG key:
 sudo apt update
 sudo apt install ca-certificates curl
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
+
 # Add the repository to Apt sources:
 sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
 Types: deb
 URIs: https://download.docker.com/linux/ubuntu
-Suites: $(. /etc/os-release && 
-echo
- 
-"
-${UBUNTU_CODENAME:-$VERSION_CODENAME}
-"
-)
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
 Components: stable
 Signed-By: /etc/apt/keyrings/docker.asc
 EOF
-sudo apt update
 
+sudo apt update
 ```
 
 
@@ -141,9 +133,7 @@ sudo apt update
 
 
 ```
-
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
 ```
 
 
@@ -155,9 +145,7 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 
 
 ```
-
 sudo apt install docker-compose
-
 ```
 
 
@@ -171,164 +159,107 @@ sudo apt install docker-compose
 
 
 ```
+version: '3.8'
 
-version: 
-'3.8'
-networks: kafka-net:
-    driver: 
-bridge
-services: kafka1:
-    image: 
-confluentinc/cp-kafka:7.8.0
-    hostname: 
-kafka1
-    container_name: 
-kafka1
-    ports: -
- 
-"9092:9092"
-      -"9093:9093"
-    environment: KAFKA_NODE_ID: 
-1
-      KAFKA_PROCESS_ROLES: 
-'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 
-'1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 
-'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      
-# 已經填入你的 VM IP
-      KAFKA_ADVERTISED_LISTENERS: 
-'INTERNAL://kafka1:29092,EXTERNAL://192.168.232.131:9092'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 
-'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
-      KAFKA_INTER_BROKER_LISTENER_NAME: 
-'INTERNAL'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 
-'CONTROLLER'
-      CLUSTER_ID: 
-'EmptNWtoR4GGWx-BH6nGLQ'
-      KAFKA_HEAP_OPTS: 
-"-Xms256M -Xmx256M"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 
-3
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 
-3
-      KAFKA_MIN_INSYNC_REPLICAS: 
-2
-    volumes: -
- 
-./kafka1/data:/var/lib/kafka/data
-    networks: -
- 
-kafka-net
-  kafka2: image: 
-confluentinc/cp-kafka:7.8.0
-    hostname: 
-kafka2
-    container_name: 
-kafka2
-    ports: -
- 
-"9094:9092"
-      -"9095:9093"
-    environment: KAFKA_NODE_ID: 
-2
-      KAFKA_PROCESS_ROLES: 
-'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 
-'1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 
-'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 
-'INTERNAL://kafka2:29092,EXTERNAL://192.168.232.131:9094'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 
-'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
-      KAFKA_INTER_BROKER_LISTENER_NAME: 
-'INTERNAL'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 
-'CONTROLLER'
-      CLUSTER_ID: 
-'EmptNWtoR4GGWx-BH6nGLQ'
-      KAFKA_HEAP_OPTS: 
-"-Xms256M -Xmx256M"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 
-3
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 
-3
-      KAFKA_MIN_INSYNC_REPLICAS: 
-2
-    volumes: -
- 
-./kafka2/data:/var/lib/kafka/data
-    networks: -
- 
-kafka-net
-  kafka3: image: 
-confluentinc/cp-kafka:7.8.0
-    hostname: 
-kafka3
-    container_name: 
-kafka3
-    ports: -
- 
-"9096:9092"
-      -"9097:9093"
-    environment: KAFKA_NODE_ID: 
-3
-      KAFKA_PROCESS_ROLES: 
-'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 
-'1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 
-'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 
-'INTERNAL://kafka3:29092,EXTERNAL://192.168.232.131:9096'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 
-'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
-      KAFKA_INTER_BROKER_LISTENER_NAME: 
-'INTERNAL'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 
-'CONTROLLER'
-      CLUSTER_ID: 
-'EmptNWtoR4GGWx-BH6nGLQ'
-      KAFKA_HEAP_OPTS: 
-"-Xms256M -Xmx256M"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 
-3
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 
-3
-      KAFKA_MIN_INSYNC_REPLICAS: 
-2
-    volumes: -
- 
-./kafka3/data:/var/lib/kafka/data
-    networks: -
- 
-kafka-net
-  kafka-ui:
-    image: 
-provectuslabs/kafka-ui:latest
-    container_name: 
-kafka-cluster-ui
-    ports: -
- 
-"8080:8080"
-    environment: KAFKA_CLUSTERS_0_NAME: 
-local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29092,kafka3:29092
-    depends_on: -
- 
-kafka1
-      -kafka2
-      -kafka3
-    networks: -
- 
-kafka-net
+networks:
+  kafka-net:
+    driver: bridge
 
+services:
+  kafka1:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka1
+    container_name: kafka1
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_LISTENERS: 'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      # 填入你的 VM 或其他放容器的主機 IP # 這裡都還是明碼！後面才會做 SASL 的
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka1:29092,EXTERNAL://XXX.XXX.XXX.XXX:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_HEAP_OPTS: "-Xms256M -Xmx256M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./kafka1/data:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  kafka2:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka2
+    container_name: kafka2
+    ports:
+      - "9094:9092"
+      - "9095:9093"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_LISTENERS: 'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka2:29092,EXTERNAL://192.168.232.131:9094'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_HEAP_OPTS: "-Xms256M -Xmx256M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./kafka2/data:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  kafka3:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka3
+    container_name: kafka3
+    ports:
+      - "9096:9092"
+      - "9097:9093"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_LISTENERS: 'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka3:29092,EXTERNAL://192.168.232.131:9096'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_HEAP_OPTS: "-Xms256M -Xmx256M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./kafka3/data:/var/lib/kafka/data
+    networks:
+      - kafka-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-cluster-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29092,kafka3:29092
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    networks:
+      - kafka-net
 ```
-
-
 ---
 
 ## 
@@ -348,168 +279,60 @@ kafka-net
 
 
 ```
-
 #!/usr/bin/env bash
-set
- -euo pipefail
-BOOTSTRAP_SERVER=
-"
-${1:-localhost:9092}
-"
-TOPIC=
-"
-${2:-healthcheck-topic}
-"
-echo
- 
-"== Kafka Health Check =="
-echo
- 
-"Bootstrap: 
-$BOOTSTRAP_SERVER
-"
-echo
- 
-"Topic:     
-$TOPIC
-"
-echo
-# 1) 檢查 broker 是否可連線 + topic 是否可列出
-echo
- 
-"[1/4] Checking broker connectivity..."
-kafka-topics.sh --bootstrap-server 
-"
-$BOOTSTRAP_SERVER
-"
- --list > /dev/null
-echo
- 
-"OK: broker reachable"
-echo
-# 2) 確保 topic 存在 (不存在就建立)
-echo
- 
-"[2/4] Ensuring topic exists..."
-if
- kafka-topics.sh --bootstrap-server 
-"
-$BOOTSTRAP_SERVER
-"
- --describe --topic 
-"
-$TOPIC
-"
- > /dev/null 2>&1; 
-then
-  
-echo
- 
-"OK: topic exists"
-else
-  kafka-topics.sh --bootstrap-server 
-"
-$BOOTSTRAP_SERVER
-"
- \
-    --create --topic 
-"
-$TOPIC
-"
- --partitions 1 \
-    --replication-factor 1 > /dev/null
-  
-echo
- 
-"OK: topic created"
-fi
-echo
-# 3) Produce 一筆測試訊息 (帶唯一 ID)
-MSG=
-"healthcheck-
-$(date +%s)
--
-$RANDOM
-"
-echo
- 
-"[3/4] Producing message: 
-$MSG
-"
-echo
- 
-"
-$MSG
-"
- | kafka-console-producer.sh --bootstrap-server 
-"
-$BOOTSTRAP_SERVER
-"
- --topic 
-"
-$TOPIC
-"
- > /dev/null
-echo
- 
-"OK: produced"
-echo
-# 4) Consume 讀回來 (只讀 1 筆, 避免卡住)
-echo
- 
-"[4/4] Consuming message..."
-RECV=$(kafka-console-consumer.sh \
-  --bootstrap-server 
-"
-$BOOTSTRAP_SERVER
-"
- \
-  --topic 
-"
-$TOPIC
-"
- \
-  --from-beginning \
-  --timeout-ms 5000 \
-  --max-messages 10 2>/dev/null | grep 
-"
-$MSG
-"
- || 
-true
-)
-if
- [[ 
-"
-$RECV
-"
- == 
-"
-$MSG
-"
- ]]; 
-then
-  
-echo
-  
-echo
- 
-"✅ SUCCESS: Kafka is working (produce/consume verified)"
-  
-exit
- 0
-else
-  
-echo
-  
-echo
- 
-"❌ FAIL: did not receive produced message"
-  
-exit
- 1
-fi
+set -euo pipefail
 
+BOOTSTRAP_SERVER="${1:-localhost:9092}"
+TOPIC="${2:-healthcheck-topic}"
+
+echo "== Kafka Health Check =="
+echo "Bootstrap: $BOOTSTRAP_SERVER"
+echo "Topic:     $TOPIC"
+echo
+
+# 1) 檢查 broker 是否可連線 + topic 是否可列出
+echo "[1/4] Checking broker connectivity..."
+kafka-topics.sh --bootstrap-server "$BOOTSTRAP_SERVER" --list > /dev/null
+echo "OK: broker reachable"
+echo
+
+# 2) 確保 topic 存在 (不存在就建立)
+echo "[2/4] Ensuring topic exists..."
+if kafka-topics.sh --bootstrap-server "$BOOTSTRAP_SERVER" --describe --topic "$TOPIC" > /dev/null 2>&1; then
+  echo "OK: topic exists"
+else
+  kafka-topics.sh --bootstrap-server "$BOOTSTRAP_SERVER" \
+    --create --topic "$TOPIC" --partitions 1 \
+    --replication-factor 1 > /dev/null
+  echo "OK: topic created"
+fi
+echo
+
+# 3) Produce 一筆測試訊息 (帶唯一 ID)
+MSG="healthcheck-$(date +%s)-$RANDOM"
+echo "[3/4] Producing message: $MSG"
+echo "$MSG" | kafka-console-producer.sh --bootstrap-server "$BOOTSTRAP_SERVER" --topic "$TOPIC" > /dev/null
+echo "OK: produced"
+echo
+
+# 4) Consume 讀回來 (只讀 1 筆, 避免卡住)
+echo "[4/4] Consuming message..."
+RECV=$(kafka-console-consumer.sh \
+  --bootstrap-server "$BOOTSTRAP_SERVER" \
+  --topic "$TOPIC" \
+  --from-beginning \
+  --timeout-ms 5000 \
+  --max-messages 10 2>/dev/null | grep "$MSG" || true)
+
+if [[ "$RECV" == "$MSG" ]]; then
+  echo
+  echo "✅ SUCCESS: Kafka is working (produce/consume verified)"
+  exit 0
+else
+  echo
+  echo "❌ FAIL: did not receive produced message"
+  exit 1
+fi
 ```
 
 
@@ -517,9 +340,7 @@ fi
 
 
 ```
-
 chmod +x kafka_check.sh
-
 ```
 
 
@@ -527,9 +348,7 @@ chmod +x kafka_check.sh
 
 
 ```
-
 sudo docker cp kafka_check.sh kafka1:/tmp/kafka_check.sh
-
 ```
 
 
@@ -539,11 +358,7 @@ sudo docker cp kafka_check.sh kafka1:/tmp/kafka_check.sh
 
 
 ```
-
-sudo docker 
-exec
- -it kafka1 bash ## bash 是指定要用什麼語言
-
+sudo docker exec -it kafka1 bash ## bash 是指定要用什麼語言
 ```
 
 
@@ -553,9 +368,7 @@ exec
 
 
 ```
-
 ./kafka_check.sh kafka1:29092 healthcheck-topic
-
 ```
 
 
@@ -583,31 +396,22 @@ exec
 
 - 看資料層 (Topic/Partition/Leader)
 
-
 ```
-
 /usr/bin/kafka-topics --bootstrap-server kafka1:29092 --describe --topic healthcheck-topic
-
 ```
 
 
 - 看管理層狀態 (Controller Leader):
 
-
 ```
-
 /usr/bin/kafka-metadata-quorum --bootstrap-server kafka1:29092 describe --status
-
 ```
 
 
 - 看管理層成員 (Controller 同步狀況)
 
-
 ```
-
 /usr/bin/kafka-metadata-quorum --bootstrap-server kafka1:29092 describe --replication
-
 ```
 
 
@@ -617,25 +421,14 @@ exec
 
 1. 建立一個新的 Topic ，在建立時就設定好有 3 個副本。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-topics --create --bootstrap-server localhost:9092 --topic ha-test-topic --partitions 3 --replication-factor 3
-
+sudo docker exec -it kafka1 kafka-topics --create --bootstrap-server localhost:9092 --topic ha-test-topic --partitions 3 --replication-factor 3
 ```
-
 
 2. 驗證目前的 Topic, Partition, Leader, Replica 的狀態。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-topics --describe --bootstrap-server localhost:9092 --topic ha-test-topic
-
+sudo docker exec -it kafka1 kafka-topics --describe --bootstrap-server localhost:9092 --topic ha-test-topic
 ```
 
 
@@ -645,49 +438,27 @@ exec
 
 3. 進入到 Kafka1 啟動 Kafka 的生產者工具，並在剛剛新建的 Topic 下傳遞訊息。最重要的是設定 acks=all ，這個設定會使所有 ISR 的資料都同步才算成功。我在第一個 Powershell SSH 分頁操作。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-console-producer --bootstrap-server localhost:9092 --topic ha-test-topic --producer-property acks=all
-
+sudo docker exec -it kafka1 kafka-console-producer --bootstrap-server localhost:9092 --topic ha-test-topic --producer-property acks=all
 ```
-
 
 4. 第二個 Powershell SSH 分頁上，我們透過 describe 來觀察傳輸訊息後的狀況。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-topics --describe --bootstrap-server localhost:9092 --topic ha-test-topic
-
+sudo docker exec -it kafka1 kafka-topics --describe --bootstrap-server localhost:9092 --topic ha-test-topic
 ```
-
 
 5. 第三個 Powershell SSH 分頁上，我們做好等等驗證 HA 的預備：暫停 Kafka 2。
 
-
 ```
-
 sudo docker stop kafka2
-
 ```
-
 
 6. 第四個 Powershell SSH 分頁上，我們模擬 Consumer。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-console-consumer --bootstrap-server localhost:9092 --topic ha-test-topic --from-beginning
-
+sudo docker exec -it kafka1 kafka-console-consumer --bootstrap-server localhost:9092 --topic ha-test-topic --from-beginning
 ```
-
 
 7. 檢視目前 Producer 和 Consumer 的運作。
 
@@ -723,13 +494,9 @@ describe 狀況如下
 
 10. 將兩台 kafka 都恢復。
 
-
 ```
-
 sudo docker start kafka2 kafka3
-
 ```
-
 
 ![](images/image14.png)
 
@@ -739,15 +506,9 @@ sudo docker start kafka2 kafka3
 
 11. 我們必須修正這個過載的情形，進入到 kafka1 內，執行偏好副本的指令，重新選舉。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-leader-election --bootstrap-server localhost:9092 --election-type preferred --all-topic-partitions
-
+sudo docker exec -it kafka1 kafka-leader-election --bootstrap-server localhost:9092 --election-type preferred --all-topic-partitions
 ```
-
 
 一切都恢復正常
 
@@ -757,27 +518,16 @@ exec
 
 調整檢查 Broker 負載的時間間隔(此處以30秒為例)
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-configs --bootstrap-server localhost:9092 --alter --entity-type brokers --entity-name 1 --add-config leader.imbalance.check.interval.seconds=30
-
+sudo docker exec -it kafka1 kafka-configs --bootstrap-server localhost:9092 --alter --entity-type brokers --entity-name 1 --add-config leader.imbalance.check.interval.seconds=30
 ```
 
 
 調整 Broker 負載傾斜率(多少負擔集中在特定 Broker 上)(此處以極端的 1% 為例)
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-configs --bootstrap-server localhost:9092 --alter --entity-type brokers --entity-name 1 --add-config leader.imbalance.per.broker.percentage=1
-
+sudo docker exec -it kafka1 kafka-configs --bootstrap-server localhost:9092 --alter --entity-type brokers --entity-name 1 --add-config leader.imbalance.per.broker.percentage=1
 ```
-
 
 ---
 
@@ -787,47 +537,26 @@ exec
 
 1. 開兩個獨立的 Powershell 視窗，分別當作 Consumer 1 跟 Consumer 2，它們在同一個 Consumer Group 裡面。在創建群組時，我們也加入了能夠顯示訊息來源的參數。視窗此時應該顯示等待訊息的狀態。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-console-consumer --bootstrap-server localhost:9092 --topic ha-test-topic --group my-lab-group --property print.partition=
-true
-
+sudo docker exec -it kafka1 kafka-console-consumer --bootstrap-server localhost:9092 --topic ha-test-topic --group my-lab-group --property print.partition=true
 ```
-
 
 2. 進到 Prodocer 的畫面開始傳送訊息，結果在嘗試的時候發現了 Sticky Partitioner 的機制，訊息全部都跑去 Partition 0，然後也由特定 Consumer 在處理。
 
 目前的分工
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group my-lab-group
-
+sudo docker exec -it kafka1 kafka-consumer-groups --bootstrap-server localhost:9092 --describe --group my-lab-group
 ```
-
 
 ![](images/image40.png)
 
 3. 重新開 Producer ，並設定讀取 key 的參數，讓它依照 key 去分配給不同的 Partition 。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-console-producer  --bootstrap-server localhost:9092  --topic ha-test-topic  --property 
-"parse.key=true"
-  --property 
-"key.separator=:"
-
+sudo docker exec -it kafka1 kafka-console-producer  --bootstrap-server localhost:9092  --topic ha-test-topic  --property 
+"parse.key=true" --property "key.separator=:"
 ```
-
 
 4. 實際傳遞訊息與觀察 Consumer，的確如實運行且順利分配！它不會特別顯示 key 值。
 
@@ -865,25 +594,15 @@ Consumer 重新上工並接到剛剛的 Commited Offset。
 
 1. 建立一個新的 Topic 給 Performance test。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-topics --create  --bootstrap-server localhost:9092  --topic perf-test  --partitions 3  --replication-factor 3
-
+sudo docker exec -it kafka1 kafka-topics --create  --bootstrap-server localhost:9092  --topic perf-test  --partitions 3  --replication-factor 3
 ```
 
 
 2. 進行不理會 ISR 的訊息高壓力測試。不管流量限制，一次給超大量紀錄。
 
-
 ```
-
-sudo docker 
-exec
- -it kafka1 kafka-producer-perf-test  --topic perf-test  --num-records 500000  --record-size 1024  --throughput -1  --producer-props  bootstrap.servers=localhost:9092  acks=1
-
+sudo docker exec -it kafka1 kafka-producer-perf-test  --topic perf-test  --num-records 500000  --record-size 1024  --throughput -1  --producer-props  bootstrap.servers=localhost:9092  acks=1
 ```
 
 
@@ -905,24 +624,14 @@ exec
 
 1. 由於 Kafka 底層主要是用 Java 來編寫的，所以我們要用 Java 的驗證機制。首先，在與 yml 檔相同的目錄中創建以下的身分驗證組態檔 kafka\_server\_jaas.conf。裡面有兩種身分，超級管理者還有兩名普通使用者。
 
-
 ```
-
 KafkaServer {
-   org.apache.kafka.common.security.plain.PlainLoginModule required
-   username=
-"admin"
-   password=
-"admin-secret"
-   user_admin=
-"admin-secret"
-   user_alice=
-"alice-secret"
-   user_bob=
-"bob-secret"
-;
+   org.apache.kafka.common.security.plain.PlainLoginModule required
+   username="admin"
+   password="admin-secret"
+   user_admin="admin-secret"
+   user_alice="alice-secret";
 };
-
 ```
 
 
@@ -930,522 +639,310 @@ KafkaServer {
 
 2.1 新增密碼檔的掛載點（每台都要做）
 
-
 ```
-
-volumes: -
- 
-./kafka1/data:/var/lib/kafka/data
-  
-# (這是原本的)
-      -./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
- 
-      # --- 新增上面這行 ---
-
+volumes:
+      - ./kafka1/data:/var/lib/kafka/data  # (這是原本的)
+      - ./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf 
+      # --- 新增上面這行 ---
 ```
 
 
 2.2 在環境的部分，做如下調整。（每台都要做）
 
-
 ```
+environment:
+      # ... (其他 ID、Cluster ID 等設定保持不變) ...
 
-environment: # ... (其他 ID、Cluster ID 等設定保持不變) ...
-      
-# [新增] 1. 告訴 Kafka 密碼檔在哪裡
-      KAFKA_OPTS: 
-"-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
-      
-# [修改] 2. 定義 EXTERNAL 必須走 SASL_PLAINTEXT (原本是 PLAINTEXT)
-      
-# INTERNAL 維持 PLAINTEXT 是為了讓你的 Kafka-UI 和叢集內部溝通，不用改
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 
-'INTERNAL:PLAINTEXT,EXTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT'
-      
-# [新增] 3. 啟用 PLAIN 認證機制
-      KAFKA_SASL_ENABLED_MECHANISMS: 
-'PLAIN'
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 
-'PLAINTEXT'
-      
-# [新增] 4. 指定 admin 為超級管理員 (對應 JAAS 檔裡的 username)
-      KAFKA_SUPER_USERS: 
-"User:admin"
+      # [新增] 1. 告訴 Kafka 密碼檔在哪裡
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
 
+      # [修改] 2. 定義 EXTERNAL 必須走 SASL_PLAINTEXT (原本是 PLAINTEXT)
+      # INTERNAL 維持 PLAINTEXT 是為了讓你的 Kafka-UI 和叢集內部溝通，不用改
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT'
+
+      # [新增] 3. 啟用 PLAIN 認證機制
+      KAFKA_SASL_ENABLED_MECHANISMS: 'PLAIN'
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 'PLAINTEXT'
+
+      # [新增] 4. 指定 admin 為超級管理員 (對應 JAAS 檔裡的 username)
+      KAFKA_SUPER_USERS: "User:admin"
 ```
-
 
 有關 SSL 的環境
 
-
 ```
-
-      
 # [新增] SSL 憑證設定 (每一台 Broker 都要加，注意檔名對應)
-      
-# 告訴 Kafka：信任的 CA 在哪？
-      KAFKA_SSL_TRUSTSTORE_LOCATION: 
-/etc/kafka/secrets/kafka.server.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: 
-changeit
-      
-      
-# 告訴 Kafka：我自己的身分證(私鑰)在哪？
-      
-# 注意：kafka1 用 kafka1.keystore.jks，kafka2 用 kafka2... 以此類推
-      KAFKA_SSL_KEYSTORE_LOCATION: 
-/etc/kafka/secrets/kafka1.keystore.jks
-      KAFKA_SSL_KEYSTORE_PASSWORD: 
-changeit
-      KAFKA_SSL_KEY_PASSWORD: 
-changeit
-      
-# [新增] 偷吃步參數 (開發環境必加)
-      
-# 意義：關閉 Hostname 驗證。否則用 localhost 連線時，憑證上寫 kafka1 會報錯。
-      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: 
-''
+      # 告訴 Kafka：信任的 CA 在哪？
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.server.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: changeit
+      
+      # 告訴 Kafka：我自己的身分證(私鑰)在哪？
+      # 注意：kafka1 用 kafka1.keystore.jks，kafka2 用 kafka2... 以此類推
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka1.keystore.jks
+      KAFKA_SSL_KEYSTORE_PASSWORD: changeit
+      KAFKA_SSL_KEY_PASSWORD: changeit
 
+      # [新增] 偷吃步參數 (開發環境必加)
+      # 意義：關閉 Hostname 驗證。否則用 localhost 連線時，憑證上寫 kafka1 會報錯。
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
 ```
-
 
 2.3 建立產生私鑰的腳本 [generate-ssl.sh](http://generate-ssl.sh) 。
 
-
 ```
-
 #!/bin/bash
 mkdir -p secrets
-cd
- secrets
-echo
- 
-"1. 產生 CA (憑證中心) [已修正: 加入 CA 標記]..."
+cd secrets
+
+echo "1. 產生 CA (憑證中心) [加入 CA 標記]..."
 # A. 產生 CA 私鑰與憑證 (注意最後一行的 -ext bc:c)
 keytool -genkey -noprompt \
-    -
-alias
- ca \
-    -dname 
-"CN=MyCA"
- \
-    -keystore kafka.server.truststore.jks \
-    -keyalg RSA \
-    -storepass changeit \
-    -keypass changeit \
-    -ext bc:c
+    -alias ca \
+    -dname "CN=MyCA" \
+    -keystore kafka.server.truststore.jks \
+    -keyalg RSA \
+    -storepass YOUR_SECRET_PASSWORD \
+    -keypass YOUR_SECRET_PASSWORD \
+    -ext bc:c
+
 # B. 匯出 CA 憑證
-keytool -
-export
- -noprompt \
-    -
-alias
- ca \
-    -file ca-cert \
-    -keystore kafka.server.truststore.jks \
-    -storepass changeit
+keytool -export -noprompt \
+    -alias ca \
+    -file ca-cert \
+    -keystore kafka.server.truststore.jks \
+    -storepass YOUR_SECRET_PASSWORD
+
 # 幫 3 台 Broker 產生憑證
-for
- i 
-in
- 1 2 3; 
-do
-    
-echo
- 
-"2. 正在幫 kafka
-$i
- 產生憑證..."
-    
-    
-# C. 產生 Keystore
-    keytool -genkey -noprompt \
-        -
-alias
- kafka
-$i
- \
-        -dname 
-"CN=kafka
-$i
-"
- \
-        -keystore kafka
-$i
-.keystore.jks \
-        -keyalg RSA \
-        -storepass changeit \
-        -keypass changeit \
-        -ext SAN=DNS:kafka
-$i
-,DNS:localhost,IP:127.0.0.1,IP:192.168.232.131
-    
-# D. 產生簽署請求 (CSR)
-    keytool -certreq -noprompt \
-        -
-alias
- kafka
-$i
- \
-        -keystore kafka
-$i
-.keystore.jks \
-        -file kafka
-$i
-.csr \
-        -storepass changeit
-    
-# E. 用 CA 簽名
-    keytool -gencert -noprompt \
-        -
-alias
- ca \
-        -keystore kafka.server.truststore.jks \
-        -infile kafka
-$i
-.csr \
-        -outfile kafka
-$i
--cert-signed \
-        -storepass changeit \
-        -ext SAN=DNS:kafka
-$i
-,DNS:localhost,IP:127.0.0.1,IP:192.168.232.131
-    
-# F. 匯入憑證 chain
-    keytool -import -noprompt \
-        -
-alias
- ca \
-        -keystore kafka
-$i
-.keystore.jks \
-        -file ca-cert \
-        -storepass changeit
-    
-    keytool -import -noprompt \
-        -
-alias
- kafka
-$i
- \
-        -keystore kafka
-$i
-.keystore.jks \
-        -file kafka
-$i
--cert-signed \
-        -storepass changeit
-        
-    
-echo
- 
-"kafka
-$i
- 完成！"
+for i in 1 2 3; do
+    echo "2. 正在幫 kafka$i 產生憑證..."
+    
+    # C. 產生 Keystore
+    keytool -genkey -noprompt \
+        -alias kafka$i \
+        -dname "CN=kafka$i" \
+        -keystore kafka$i.keystore.jks \
+        -keyalg RSA \
+        -storepass YOUR_SECRET_PASSWORD \
+        -keypass YOUR_SECRET_PASSWORD \
+        -ext SAN=DNS:kafka$i,DNS:localhost,IP:127.0.0.1,IP:XXX.XXX.XXX.XXX
+
+    # D. 產生簽署請求 (CSR)
+    keytool -certreq -noprompt \
+        -alias kafka$i \
+        -keystore kafka$i.keystore.jks \
+        -file kafka$i.csr \
+        -storepass YOUR_SECRET_PASSWORD
+
+    # E. 用 CA 簽名
+    keytool -gencert -noprompt \
+        -alias ca \
+        -keystore kafka.server.truststore.jks \
+        -infile kafka$i.csr \
+        -outfile kafka$i-cert-signed \
+        -storepass YOUR_SECRET_PASSWORD \
+        -ext SAN=DNS:kafka$i,DNS:localhost,IP:127.0.0.1,IP:XXX.XXX.XXX.XXX
+
+    # F. 匯入憑證 chain
+    keytool -import -noprompt \
+        -alias ca \
+        -keystore kafka$i.keystore.jks \
+        -file ca-cert \
+        -storepass YOUR_SECRET_PASSWORD
+    
+    keytool -import -noprompt \
+        -alias kafka$i \
+        -keystore kafka$i.keystore.jks \
+        -file kafka$i-cert-signed \
+        -storepass YOUR_SECRET_PASSWORD
+        
+    echo "kafka$i 完成！"
 done
+
 # 清理暫存檔
 rm ca-cert *.csr *-cert-signed
-echo
- 
-"=== 全部完成！憑證都在 secrets/ 資料夾內 ==="
-
+echo "=== 全部完成！憑證都在 secrets/ 資料夾內 ==="
 ```
-
 
 2.4 修改 sh 檔的權限：chmod +x [generate-ssl.sh](http://generate-ssl.sh)，但第一時間會報錯，因為乾淨的 ubuntu 上面並沒有 Java ，所以改借用一個容器(Kafka，裡面一定有 Java )來執行腳本。容器用完就直接刪除。
 
-
 ```
-
-sudo docker run --rm -v 
-"
-$(pwd)
-"
-:/work -w /work confluentinc/cp-kafka:7.8.0 bash ./generate-ssl.sh
-
+sudo docker run --rm -v "$(pwd)":/work -w /work confluentinc/cp-kafka:7.8.0 bash ./generate-ssl.sh
 ```
-
 
 2.5 執行，得到一個 secrets 的資料夾以及三把鑰匙。但這三把鑰匙所在的 secrets 權限一開始會是 root ，我們要改成 User。
 
-
 ```
-
-sudo chown -R 
-$USER
-:
-$USER
- secrets
-
+sudo chown -R $USER:$USER secrets
 ```
-
 
 用 ls -l 檢查。
 
 ![](images/image27.png)
 
-3. 以下是完整的修改後的 yml 檔。
-
+3. 以下是加入 SASL 後完整的修改後的 yml 檔。
 
 ```
+version: '3.8'
 
-version: 
-'3.8'
-networks: kafka-net:
-    driver: 
-bridge
-services: kafka1:
-    image: 
-confluentinc/cp-kafka:7.8.0
-    hostname: 
-kafka1
-    container_name: 
-kafka1
-    ports: -
- 
-"9092:9092"
-      -"9093:9093"
-    environment: KAFKA_NODE_ID: 
-1
-      KAFKA_PROCESS_ROLES: 
-'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 
-'1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 
-'INTERNAL://kafka1:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      
-# 注意：請確認 IP 192.168.232.131 是正確的
-      KAFKA_ADVERTISED_LISTENERS: 
-'INTERNAL://kafka1:29092,EXTERNAL://192.168.232.131:9092'
-      
-      
-# === 安全設定開始 (SASL_SSL) ===
-      
-# 1. 載入 SASL 帳號密碼設定
-      KAFKA_OPTS: 
-"-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
-      
-      
-# 2. 定義協定：外部連線使用 SASL_SSL (加密+登入)
-      
-# 內部溝通維持 PLAINTEXT 以簡化管理
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 
-'INTERNAL:PLAINTEXT,EXTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT'
-      
-      
-# 3. 啟用 PLAIN 認證機制
-      KAFKA_SASL_ENABLED_MECHANISMS: 
-'PLAIN'
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 
-'PLAINTEXT'
-      
-      
-# 4. 指定管理員
-      KAFKA_SUPER_USERS: 
-"User:admin"
-      
-# 5. SSL 憑證設定 (Kafka 1 專用)
-      KAFKA_SSL_TRUSTSTORE_LOCATION: 
-/etc/kafka/secrets/kafka.server.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: 
-changeit
-      KAFKA_SSL_KEYSTORE_LOCATION: 
-/etc/kafka/secrets/kafka1.keystore.jks
-      KAFKA_SSL_KEYSTORE_PASSWORD: 
-changeit
-      KAFKA_SSL_KEY_PASSWORD: 
-changeit
-      
-      
-# 6. 開發環境專用：關閉 Hostname 驗證 (避免 localhost 連線報錯)
-      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: 
-''
-      
-# === 安全設定結束 ===
-      KAFKA_INTER_BROKER_LISTENER_NAME: 
-'INTERNAL'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 
-'CONTROLLER'
-      CLUSTER_ID: 
-'EmptNWtoR4GGWx-BH6nGLQ'
-      KAFKA_HEAP_OPTS: 
-"-Xms256M -Xmx256M"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 
-3
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 
-3
-      KAFKA_MIN_INSYNC_REPLICAS: 
-2
-    volumes: -
- 
-./kafka1/data:/var/lib/kafka/data
-      -./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
-      -./secrets:/etc/kafka/secrets
-  
-# 掛載憑證
-    networks: -
- 
-kafka-net
-  kafka2: image: 
-confluentinc/cp-kafka:7.8.0
-    hostname: 
-kafka2
-    container_name: 
-kafka2
-    ports: -
- 
-"9094:9092"
-      -"9095:9093"
-    environment: KAFKA_NODE_ID: 
-2
-      KAFKA_PROCESS_ROLES: 
-'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 
-'1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 
-'INTERNAL://kafka2:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 
-'INTERNAL://kafka2:29092,EXTERNAL://192.168.232.131:9094'
-      
-      
-# === 安全設定 (SASL_SSL) ===
-      KAFKA_OPTS: 
-"-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 
-'INTERNAL:PLAINTEXT,EXTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT'
-      KAFKA_SASL_ENABLED_MECHANISMS: 
-'PLAIN'
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 
-'PLAINTEXT'
-      KAFKA_SUPER_USERS: 
-"User:admin"
-      
-# SSL 設定 (Kafka 2 專用)
-      KAFKA_SSL_TRUSTSTORE_LOCATION: 
-/etc/kafka/secrets/kafka.server.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: 
-changeit
-      KAFKA_SSL_KEYSTORE_LOCATION: 
-/etc/kafka/secrets/kafka2.keystore.jks
-      KAFKA_SSL_KEYSTORE_PASSWORD: 
-changeit
-      KAFKA_SSL_KEY_PASSWORD: 
-changeit
-      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: 
-''
-      
-# =========================
-      KAFKA_INTER_BROKER_LISTENER_NAME: 
-'INTERNAL'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 
-'CONTROLLER'
-      CLUSTER_ID: 
-'EmptNWtoR4GGWx-BH6nGLQ'
-      KAFKA_HEAP_OPTS: 
-"-Xms256M -Xmx256M"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 
-3
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 
-3
-      KAFKA_MIN_INSYNC_REPLICAS: 
-2
-    volumes: -
- 
-./kafka2/data:/var/lib/kafka/data
-      -./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
-      -./secrets:/etc/kafka/secrets
-    networks: -
- 
-kafka-net
-  kafka3: image: 
-confluentinc/cp-kafka:7.8.0
-    hostname: 
-kafka3
-    container_name: 
-kafka3
-    ports: -
- 
-"9096:9092"
-      -"9097:9093"
-    environment: KAFKA_NODE_ID: 
-3
-      KAFKA_PROCESS_ROLES: 
-'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 
-'1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 
-'INTERNAL://kafka3:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 
-'INTERNAL://kafka3:29092,EXTERNAL://192.168.232.131:9096'
-      
-      
-# === 安全設定 (SASL_SSL) ===
-      KAFKA_OPTS: 
-"-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 
-'INTERNAL:PLAINTEXT,EXTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT'
-      KAFKA_SASL_ENABLED_MECHANISMS: 
-'PLAIN'
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 
-'PLAINTEXT'
-      KAFKA_SUPER_USERS: 
-"User:admin"
-      
-# SSL 設定 (Kafka 3 專用)
-      KAFKA_SSL_TRUSTSTORE_LOCATION: 
-/etc/kafka/secrets/kafka.server.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: 
-changeit
-      KAFKA_SSL_KEYSTORE_LOCATION: 
-/etc/kafka/secrets/kafka3.keystore.jks
-      KAFKA_SSL_KEYSTORE_PASSWORD: 
-changeit
-      KAFKA_SSL_KEY_PASSWORD: 
-changeit
-      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: 
-''
-      
-# =========================
-      KAFKA_INTER_BROKER_LISTENER_NAME: 
-'INTERNAL'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 
-'CONTROLLER'
-      CLUSTER_ID: 
-'EmptNWtoR4GGWx-BH6nGLQ'
-      KAFKA_HEAP_OPTS: 
-"-Xms256M -Xmx256M"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 
-3
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 
-3
-      KAFKA_MIN_INSYNC_REPLICAS: 
-2
-    volumes: -
- 
-./kafka3/data:/var/lib/kafka/data
-      -./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
-      -./secrets:/etc/kafka/secrets
-    networks: -
- 
-kafka-net
-  kafka-ui:
-    image: 
-provectuslabs/kafka-ui:latest
-    container_name: 
-kafka-cluster-ui
-    ports: -
- 
-"8080:8080"
-    environment: KAFKA_CLUSTERS_0_NAME: 
-local
-      
-# 這裡走 INTERNAL port (29092)，維持 PLAINTEXT，所以 UI 不需要改 SSL 設定
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29092,kafka3:29092
-    networks: -
- 
-kafka-net
+networks:
+  kafka-net:
+    driver: bridge
 
+services:
+  kafka1:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka1
+    container_name: kafka1
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_LISTENERS: 'INTERNAL://kafka1:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      # 注意：請確認放容器的主機 IP 
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka1:29092,EXTERNAL://XXX.XXX.XXX.XXX:9092'
+      
+      # === 安全設定開始 (SASL_SSL) ===
+      # 1. 載入 SASL 帳號密碼設定
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
+      
+      # 2. 定義協定：外部連線使用 SASL_SSL (加密+登入)
+      # 內部溝通維持 PLAINTEXT 以簡化管理
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT'
+      
+      # 3. 啟用 PLAIN 認證機制
+      KAFKA_SASL_ENABLED_MECHANISMS: 'PLAIN'
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 'PLAINTEXT'
+      
+      # 4. 指定管理員
+      KAFKA_SUPER_USERS: "User:admin;User:ANONYMOUS"
+
+      # 5. SSL 憑證設定 (Kafka 1 專用)
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.server.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka1.keystore.jks
+      KAFKA_SSL_KEYSTORE_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_KEY_PASSWORD: YOUR_PASSWORD
+      
+      # 6. 開發環境專用：關閉 Hostname 驗證 (避免 localhost 連線報錯)
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
+      # === 安全設定結束 ===
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_HEAP_OPTS: "-Xms256M -Xmx256M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./kafka1/data:/var/lib/kafka/data
+      - ./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      - ./secrets:/etc/kafka/secrets  # 掛載憑證
+    networks:
+      - kafka-net
+
+  kafka2:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka2
+    container_name: kafka2
+    ports:
+      - "9094:9092"
+      - "9095:9093"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_LISTENERS: 'INTERNAL://kafka2:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka2:29092,EXTERNAL://XXX.XXX.XXX.XXX:9094'
+      
+      # === 安全設定 (SASL_SSL) ===
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT'
+      KAFKA_SASL_ENABLED_MECHANISMS: 'PLAIN'
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 'PLAINTEXT'
+      KAFKA_SUPER_USERS: "User:admin;User:ANONYMOUS"
+
+      # SSL 設定 (Kafka 2 專用)
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.server.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka2.keystore.jks
+      KAFKA_SSL_KEYSTORE_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_KEY_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
+      # =========================
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_HEAP_OPTS: "-Xms256M -Xmx256M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./kafka2/data:/var/lib/kafka/data
+      - ./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      - ./secrets:/etc/kafka/secrets
+    networks:
+      - kafka-net
+
+  kafka3:
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka3
+    container_name: kafka3
+    ports:
+      - "9096:9092"
+      - "9097:9093"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_LISTENERS: 'INTERNAL://kafka3:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka3:29092,EXTERNAL://XXX.XXX.XXX.XXX:9096'
+      
+      # === 安全設定 (SASL_SSL) ===
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:SASL_SSL,CONTROLLER:PLAINTEXT'
+      KAFKA_SASL_ENABLED_MECHANISMS: 'PLAIN'
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: 'PLAINTEXT'
+      KAFKA_SUPER_USERS: "User:admin;User:ANONYMOUS"
+
+      # SSL 設定 (Kafka 3 專用)
+      KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.server.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka3.keystore.jks
+      KAFKA_SSL_KEYSTORE_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_KEY_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
+      # =========================
+
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_HEAP_OPTS: "-Xms256M -Xmx256M"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
+    volumes:
+      - ./kafka3/data:/var/lib/kafka/data
+      - ./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf
+      - ./secrets:/etc/kafka/secrets
+    networks:
+      - kafka-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-cluster-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      # 這裡走 INTERNAL port (29092)，維持 PLAINTEXT，所以 UI 不需要改 SSL 設定
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29092,kafka3:29092
+    networks:
+      - kafka-net
 ```
 
 
@@ -1453,66 +950,46 @@ kafka-net
 
 5. 建立 topic。
 
-
 ```
-
-sudo docker 
-exec
- kafka1 kafka-topics \
-  --create \
-  --topic ha-test-topic \
-  --partitions 3 \
-  --replication-factor 3 \
-  --bootstrap-server kafka1:29092
-
+sudo docker exec kafka1 kafka-topics \
+  --create \
+  --topic ha-test-topic \
+  --partitions 3 \
+  --replication-factor 3 \
+  --bootstrap-server kafka1:29092
 ```
 
 
-6. 在 kafka-cluster 的目錄中建立一個 client 的 properties 檔，以說明這個 client 要用 SSL 加密，我要用 admin 登入，而且我相信那個 Truststore。
-
+6. 在 kafka-cluster 的目錄中建立一個 client 的 properties 檔，以說明「這個 client 要用 SSL 加密，我要用 admin 登入，而且我相信那個 Truststore。」
 
 ```
-
 # 1. 安全協定：SASL + SSL
 security.protocol=SASL_SSL
 sasl.mechanism=PLAIN
+
 # 2. 帳號密碼 (這裡是 admin)
-sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=
-"admin"
- password=
-"admin-secret"
-;
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="SECRET_PASSWORD";
+
 # 3. SSL 信任設定 (Client 只需要 Truststore)
 # 注意：這裡的路徑是指「容器內的路徑」，等一下我們會掛載進去
 ssl.truststore.location=/etc/kafka/secrets/kafka.server.truststore.jks
-ssl.truststore.password=changeit
+ssl.truststore.password=YOUR_PASSWORD
+
 # 4. 如果是用 IP 連線，為了避免 SSL 檢查主機名稱報錯，先關掉驗證
 ssl.endpoint.identification.algorithm=
-
 ```
-
 
 7. 啟用一個容器作為免洗的 client，來印證加密是否成功。
 
-
 ```
-
 sudo docker run --rm -it --network host \
-  -v $(
-pwd
-)/secrets:/etc/kafka/secrets \
-  -v $(
-pwd
-)/client-ssl.properties:/tmp/client-ssl.properties \
-  confluentinc/cp-kafka:7.8.0 \
-  kafka-topics --list \
-  --bootstrap-server 192.168.232.131:9092 \
-  --
-command
--config /tmp/client-ssl.properties
-
+  -v $(pwd)/secrets:/etc/kafka/secrets \
+  -v $(pwd)/client-ssl.properties:/tmp/client-ssl.properties \
+  confluentinc/cp-kafka:7.8.0 \
+  kafka-topics --list \
+  --bootstrap-server 192.168.232.131:9092 \
+  --command-config /tmp/client-ssl.properties
 ```
-
 
 8. 最終成功，這個 client-admin 通過了加密驗證。
 
@@ -1520,76 +997,46 @@ command
 
 9. 接著，我們來進行一個失敗的測試：client-alice。我們要創建一個 alice 的 properties 檔。
 
-
 ```
-
 security.protocol=SASL_SSL
 sasl.mechanism=PLAIN
 # 注意：這裡改成 Alice 的帳號密碼
-sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=
-"alice"
- password=
-"alice-secret"
-;
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="alice" password="SECRET_PASSWORD";
+
 # SSL 設定跟 admin 一樣，因為大家連的是同一家銀行
 ssl.truststore.location=/etc/kafka/secrets/kafka.server.truststore.jks
-ssl.truststore.password=changeit
+ssl.truststore.password=YOUR_PASSWORD
 ssl.endpoint.identification.algorithm=
-
 ```
-
 
 10. 設置 Kafka 本身的授權機制。在每個 Kafka 的 environment 部分新增以下的參數。
 
-
 ```
-
-      # [新增] 啟用 KRaft 模式下的標準授權器 (這就是警衛)
-      KAFKA_AUTHORIZER_CLASS_NAME: 
-org.apache.kafka.metadata.authorizer.StandardAuthorizer
-      
-      
-# [新增] 如果沒設定權限，預設是拒絕 (Deny) 還是允許 (Allow)？
-      
-# 設為 false 代表：除非我特別發權限給你，否則你什麼都不能做 (白名單制)
-      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: 
-'false'
-
+      # [新增] 啟用 KRaft 模式下的標準授權器 (這就是警衛)
+      KAFKA_AUTHORIZER_CLASS_NAME: org.apache.kafka.metadata.authorizer.StandardAuthorizer
+      
+      # [新增] 如果沒設定權限，預設是拒絕 (Deny) 還是允許 (Allow)？
+      # 設為 false 代表：除非我特別發權限給你，否則你什麼都不能做 (白名單制)
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: 'false'
 ```
-
 
 11. 嘗試用 client-alice 去連線，結果發現整個無法連線，無法存取到 topic 。
 
-
 ```
-
 sudo docker run --rm -it --network host \
-  -v $(
-pwd
-)/secrets:/etc/kafka/secrets \
-  -v $(
-pwd
-)/client-alice.properties:/tmp/client-alice.properties \
-  confluentinc/cp-kafka:7.8.0 \
-  kafka-topics --list \
-  --bootstrap-server 192.168.232.131:9092 \
-  --
-command
--config /tmp/client-alice.properties
-
+  -v $(pwd)/secrets:/etc/kafka/secrets \
+  -v $(pwd)/client-alice.properties:/tmp/client-alice.properties \
+  confluentinc/cp-kafka:7.8.0 \
+  kafka-topics --list \
+  --bootstrap-server 192.168.232.131:9092 \
+  --command-config /tmp/client-alice.properties
 ```
 
-
-12. 由於剛剛前一個指令下去大報錯，所以需要改 superuser 的參數，讓 anonymous 的 user 也可以被視作容器內互通的對象。
-
+12. 由於剛剛前一個指令下去大報錯，所以需要回頭改 superuser 的參數，讓 anonymous 的 user 也可以被視作容器內互通的對象。
 
 ```
-
-KAFKA_SUPER_USERS: 
-"User:admin;User:ANONYMOUS"
-
+KAFKA_SUPER_USERS: "User:admin;User:ANONYMOUS"
 ```
-
 
 13. client-alice 什麼都看不到，因為權限不足。
 
@@ -1597,29 +1044,19 @@ KAFKA_SUPER_USERS:
 
 14. 接著，我們要讓 admin 授權給 client-alice ，讓它可以看特定的 topic。
 
-
 ```
-
 # 注意：這裡我們要掛載 client-ssl.properties (這是 Admin 的憑證)
 sudo docker run --rm -it --network host \
-  -v $(
-pwd
-)/secrets:/etc/kafka/secrets \
-  -v $(
-pwd
-)/client-ssl.properties:/tmp/client-ssl.properties \
-  confluentinc/cp-kafka:7.8.0 \
-  kafka-acls --bootstrap-server 192.168.232.131:9092 \
-  --
-command
--config /tmp/client-ssl.properties \
-  --add \
-  --allow-principal User:alice \
-  --operation Describe \
-  --topic ha-test-topic
-
+  -v $(pwd)/secrets:/etc/kafka/secrets \
+  -v $(pwd)/client-ssl.properties:/tmp/client-ssl.properties \
+  confluentinc/cp-kafka:7.8.0 \
+  kafka-acls --bootstrap-server 192.168.232.131:9092 \
+  --command-config /tmp/client-ssl.properties \
+  --add \
+  --allow-principal User:alice \
+  --operation Describe \
+  --topic ha-test-topic
 ```
-
 
 ![](images/image9.png)
 
@@ -1629,28 +1066,18 @@ command
 
 16. 收回 client-alice 的權限。
 
-
 ```
-
 sudo docker run --rm -it --network host \
-  -v $(
-pwd
-)/secrets:/etc/kafka/secrets \
-  -v $(
-pwd
-)/client-ssl.properties:/tmp/client-ssl.properties \
-  confluentinc/cp-kafka:7.8.0 \
-  kafka-acls --bootstrap-server 192.168.232.131:9092 \
-  --
-command
--config /tmp/client-ssl.properties \
-  --remove \
-  --allow-principal User:alice \
-  --operation Describe \
-  --topic ha-test-topic
-
+  -v $(pwd)/secrets:/etc/kafka/secrets \
+  -v $(pwd)/client-ssl.properties:/tmp/client-ssl.properties \
+  confluentinc/cp-kafka:7.8.0 \
+  kafka-acls --bootstrap-server 192.168.232.131:9092 \
+  --command-config /tmp/client-ssl.properties \
+  --remove \
+  --allow-principal User:alice \
+  --operation Describe \
+  --topic ha-test-topic
 ```
-
 
 ![](images/image18.png)
 
@@ -1666,9 +1093,7 @@ command
 
 1. 先建立 .gitignore 檔，裡面包含下列 code ，主要是避免原始檔案上傳會帶有機密資訊。
 
-
 ```
-
 # === 忽略敏感資料 (正本) ===
 secrets/
 *.jks
@@ -1677,19 +1102,16 @@ client-ssl.properties
 client-alice.properties
 # 如果你的 docker-compose.yml 裡面有真密碼，也可以選擇忽略它，只傳 example
 # 但通常我們會保留 docker-compose.yml，除非你不想讓人知道你的 IP 設定
-# 這裡依照你的需求，如果你想完全隱藏，就忽略正本：
+# 這裡依照我們的需求，忽略正本：
 docker-compose.yml
 # === 忽略資料存儲 (太大了不要傳) ===
 kafka1/data/
 kafka2/data/
 kafka3/data/
 # === 忽略執行檔或暫存檔 ===
-*.
-log
+*.log
 .DS_Store
-
 ```
-
 
 2. 其餘所有檔案都進行 copy 並在改名中加入 example ，以和原始檔案區隔。這些改名後的檔案中，原本有提到 password 的地方，依照情境改成 YOUR\_PASSWORD 或者 SECRET\_PASSWORD。
 
@@ -1697,47 +1119,32 @@ log
 
 3.1 身分設定
 
-
 ```
-
-git config --global user.name 
-"你的GitHub帳號"
-git config --global user.email 
-"你的Email"
-
+git config --global user.name "你的GitHub帳號"
+git config --global user.email "你的Email"
 ```
-
 
 3.2 初始化和加入檔案
 
-
 ```
-
 # 1. 初始化
 git init
 # 2. 加入所有檔案 (Git 會自動參考 .gitignore)
 git add .
 # 3. 【停下來看！】檢查狀態
 git status
-
 ```
-
 
 3.3 提交第一版
 
-
 ```
-
 # 1. 提交版本
-git commit -m 
-"feat: init Kafka HA Infra with KRaft, SASL/SSL and ACL"
+git commit -m "feat: init Kafka HA Infra with KRaft, SASL/SSL and ACL"
 # 2. 將分支改名為 main
 git branch -M main
 # 3. 連結到 GitHub (把下面的網址換成 GitHub 上面 Kafka 的 Repo 網址)
 git remote add origin https://github.com/你的帳號/你的Repo名稱.git
-
 ```
-
 
 Commit 後的畫面如下，它會展示所有欲上傳的檔案
 
@@ -1745,34 +1152,34 @@ Commit 後的畫面如下，它會展示所有欲上傳的檔案
 
 3.4 真正提交到遠端的 GitHub 個人倉庫，請做以下指令，並在提示下輸入使用者和密碼。
 
-
 ```
-
 git push -u origin main
-
 ```
 
 ```
-
-Username 
-for
- 
-'https://github.com'
-: 使用者名稱
-Password 
-for
- 
-'你的 repo http'
-: token
-
+Username for 'https://github.com': 使用者名稱
+Password for '你的 repo http': token
 ```
-
 
 最終結果
 
 ![](images/image30.png)
 
-4. 由於我們前面只做了 Ubuntu 上面的檔案，我們現在要把現在這份 Google Doc 變成 README 放在 GitHub 上做最終交付物，接下來會用 Windows10 去把此份文件的文和圖上傳到 GitHub repo 的 Branch ，以避免前功盡棄。同時間，我們也可以再次練習版本控制和 CI/CD 的實作。
+4. 由於我們前面只做了 Ubuntu 上面的檔案，我們現在要把現在這份 Google Doc 變成 README 放在 GitHub 上做最終交付物，接下來會用 Windows10 去把此份文件的文和圖上傳到 GitHub repo 的 Branch ，以避免前功盡棄。同時間，我們也可以再次練習版本控制和 CI/CD 的實作。為了要有一樣的內容，請執行下列指令。
+
+```
+git clone https://github.com/你的帳號/你的Repo名稱.git ; cd 你的Repo名稱
+```
+
+5. 切換新分枝以進行必要的任務。
+
+```
+git checkout -b docs/add-readme
+```
+
+6.  把這份 Google Doc 下載成 .html 加上 images directory 的形式，就可以得一個頁面跟所需要的圖檔。 html 需要轉換成 markdown 的格式並附註圖片應該插入的位置。
+
+7.  最後上傳還要同意 pull request 然後確認無誤後進行 merge。
 
 ---
 
