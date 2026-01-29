@@ -76,12 +76,10 @@
 ---
 
 ## 🎓 Minerva HC 應用註腳 (Minerva HC Usage Footnote)
-* **#scienceoflearning**： I adopted two principles from two Maxim of learning. This project's **difficulty is desirable**, on which I did plenty of **foundational reasearch** through videos and articles.
-                          *I also **transferred my knowledge regarding kubernetes and load balancer** to accelerate my understangding of Kafka, and, furthermore, I will explain to my friends, which served as a **deliberate practice**. 
-* **#purpose**： Apart from necessary requirements of this **shor-term** job-deriving project, I perceived it as the foundation of my **long-term goal**, which delineates the capabilities of facing unknown, active learning, and envisioning the future.
-                *My long-term goal is to extend my ability to span across not only among cloud but all IT-and-AI-related domains, and this project is driven by this goal.  
-* **#heuristics**： Used the means-ends-analysis in **problem-solving heuristics**. This method will break the goal down into multiple subhgoals, by resolving which we can approach the goal state. 
-                   *To my knowledge, when I made a project timeline with several small goals, I subconsciously employed this method, which is structural and auditable.
+* **#scienceoflearning**： I adopted two principles from the two maxims of learning. This project's **difficulty is desirable**, on which I did plenty of **foundational research** through videos and articles. I also **transferred my knowledge of Kubernetes and load balancers** to accelerate my understanding of Kafka, and I will explain it to my friends, which will serve as a **deliberate practice**. 
+* **#purpose**： Apart from the requirements of this **short-term** job-deriving project, I perceived it as the foundation of my **long-term goal**, which delineates the capabilities of facing unknown, active learning, and envisioning the future. My long-term goal is to expand my ability to span not only the cloud but also all IT and AI-related domains, and that goal drives this project.  
+* **#heuristics**： Used the means-ends-analysis in **problem-solving heuristics**. This method will break the goal down into multiple subgoals, resolving each as we approach the goal state. To my knowledge, when I made a project timeline with several small goals, I subconsciously employed this method, which is structural and auditable.
 
 ---
+
 *Created by Sam Wang, mainly for Futurenest*
