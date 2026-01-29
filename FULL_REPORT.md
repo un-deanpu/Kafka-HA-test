@@ -173,6 +173,7 @@ sudo apt install docker-compose
 
 3.2 建立 Kafka 的 docker-compose.yml (依照此網站的[範本](https://medium.com/@darshak.kachchhi/setting-up-a-kafka-cluster-using-docker-compose-a-step-by-step-guide-a1ee5972b122)去修改)
 
+⚠️ 注意： 複製程式碼時，請務必將所有的 XXX.XXX.XXX.XXX 替換為您實際的主機 IP (Host IP)，否則 Client 無法從外部連線。
 
 ```
 version: '3.8'
