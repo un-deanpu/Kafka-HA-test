@@ -221,7 +221,7 @@ services:
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
       KAFKA_LISTENERS: 'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka2:29092,EXTERNAL://192.168.232.131:9094'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka2:29092,EXTERNAL://XXX.XXX.XXX.XXX:9094'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
@@ -247,7 +247,7 @@ services:
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
       KAFKA_LISTENERS: 'INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka3:29092,EXTERNAL://192.168.232.131:9096'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka3:29092,EXTERNAL://XXX.XXX.XXX.XXX:9096'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
@@ -382,11 +382,9 @@ sudo docker exec -it kafka1 bash ## bash 是指定要用什麼語言
 
 5. 進入到容器的 /tmp 目錄下，確認有執行 kafka\_check.sh 的權限後執行之；參數的部分有兩個要設定，一個是要從內部網路進入，在 yaml 檔中已設定為 29092 ，第二個參數是我們要測的 topic 名稱，預設是 healthcheck-topic ，但我們也把參數指定好。
 
-
 ```
 ./kafka_check.sh kafka1:29092 healthcheck-topic
 ```
-
 
 5.1 遇到報錯，它說找不到工具。
 
@@ -508,7 +506,7 @@ describe 狀況如下
 
 ![](images/image12.png)
 
-10. 將兩台 kafka 都恢復。
+10. 將兩台 Kafka 都恢復。
 
 ```
 sudo docker start kafka2 kafka3
@@ -570,8 +568,7 @@ sudo docker exec -it kafka1 kafka-consumer-groups --bootstrap-server localhost:
 3. 重新開 Producer ，並設定讀取 key 的參數，讓它依照 key 去分配給不同的 Partition 。
 
 ```
-sudo docker exec -it kafka1 kafka-console-producer  --bootstrap-server localhost:9092  --topic ha-test-topic  --property 
-"parse.key=true" --property "key.separator=:"
+sudo docker exec -it kafka1 kafka-console-producer  --bootstrap-server localhost:9092  --topic ha-test-topic  --property "parse.key=true" --property "key.separator=:"
 ```
 
 4. 實際傳遞訊息與觀察 Consumer，的確如實運行且順利分配！它不會特別顯示 key 值。
@@ -638,18 +635,17 @@ sudo docker exec -it kafka1 kafka-producer-perf-test  --topic perf-test  --num-r
 
 ### Lab4：SASL、TLS、ACL設定
 
-1. 由於 Kafka 底層主要是用 Java 來編寫的，所以我們要用 Java 的驗證機制。首先，在與 yml 檔相同的目錄中創建以下的身分驗證組態檔 kafka\_server\_jaas.conf。裡面有兩種身分，超級管理者還有兩名普通使用者。
+1. 由於 Kafka 底層主要是用 Java 來編寫的，所以我們要用 Java 的驗證機制。首先，在與 yml 檔相同的目錄中創建以下的身分驗證組態檔 kafka\_server\_jaas.conf。裡面有兩種身分，超級管理者還有一名普通使用者。
 
 ```
 KafkaServer {
    org.apache.kafka.common.security.plain.PlainLoginModule required
    username="admin"
-   password="admin-secret"
-   user_admin="admin-secret"
-   user_alice="alice-secret";
+   password="SECRET_PASSWORD"
+   user_admin="SECRET_PASSWORD"
+   user_alice="SECRET_PASSWORD";
 };
 ```
-
 
 2. 重設 yml 檔讓各個 kafka 可以讀取 JAAS 檔和私鑰。
 
@@ -661,7 +657,6 @@ volumes:
       - ./kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf 
       # --- 新增上面這行 ---
 ```
-
 
 2.2 在環境的部分，做如下調整。（每台都要做）
 
@@ -690,13 +685,13 @@ environment:
 # [新增] SSL 憑證設定 (每一台 Broker 都要加，注意檔名對應)
       # 告訴 Kafka：信任的 CA 在哪？
       KAFKA_SSL_TRUSTSTORE_LOCATION: /etc/kafka/secrets/kafka.server.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: changeit
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: YOUR_PASSWORD
       
       # 告訴 Kafka：我自己的身分證(私鑰)在哪？
       # 注意：kafka1 用 kafka1.keystore.jks，kafka2 用 kafka2... 以此類推
       KAFKA_SSL_KEYSTORE_LOCATION: /etc/kafka/secrets/kafka1.keystore.jks
-      KAFKA_SSL_KEYSTORE_PASSWORD: changeit
-      KAFKA_SSL_KEY_PASSWORD: changeit
+      KAFKA_SSL_KEYSTORE_PASSWORD: YOUR_PASSWORD
+      KAFKA_SSL_KEY_PASSWORD: YOUR_PASSWORD
 
       # [新增] 偷吃步參數 (開發環境必加)
       # 意義：關閉 Hostname 驗證。否則用 localhost 連線時，憑證上寫 kafka1 會報錯。
