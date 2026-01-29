@@ -85,8 +85,24 @@ Kafka 依賴 ZooKeeper (舊版) 或 KRaft (新版) 來維護叢集狀態。
 
 ### 環境
 
-1. 作業系統：VMware workstation 6.7.0 ， ubuntu-24.04.3-live-server-amd64
-2. 安裝套件：
+## Tech Stack & Prerequisites
+
+### Infrastructure
+* **Virtualization**: [VMware Workstation 17 Player] (Hosted on Windows)
+* **Guest OS**: Ubuntu-24.04.3-live-server-amd64
+* **Containerization**: Docker & Docker Compose
+
+### Software Dependencies
+To run the deployment and utility scripts, ensure you have the following installed:
+* **Git**: For version control.
+* **Java Runtime (JRE/JDK)**: Required for `keytool` to generate SSL keystores. 在實驗中，我們直接用 Kafka 容器中的 Java。
+* **OpenSSL**: Required for certificate generation script (`generate-ssl.sh`).
+* **Python 3**: (Optional) Required for documentation recovery scripts. 在把 Google DOC 下載後的 html. 轉換成 md 時所需。
+    * Libraries: `beautifulsoup4`, `markdownify`
+
+### Docker Images Used
+* `confluentinc/cp-kafka:7.8.0` (KRaft Mode)
+* `provectuslabs/kafka-ui:latest`
 
 ### 部署前準備
 
