@@ -537,7 +537,8 @@ sudo docker exec -it kafka1 kafka-configs --bootstrap-server localhost:9092 --a
 ```
 
 
-調整 Broker 負載傾斜率(多少負擔集中在特定 Broker 上)(此處以極端的 1% 為例)
+調整 Broker 負載傾斜率(多少負擔集中在特定 Broker 上)(原本預設是 10% ，此處以極端的 1% 為例。)
+代表的意義：只要有任何一台 Broker 的資源（硬碟、網路、CPU）負載，超過了全體平均值的 1.01 倍，系統就會判定為不平衡 (Imbalanced)，並開始發出警報或自動搬移資料。
 
 ```
 sudo docker exec -it kafka1 kafka-configs --bootstrap-server localhost:9092 --alter --entity-type brokers --entity-name 1 --add-config leader.imbalance.per.broker.percentage=1
